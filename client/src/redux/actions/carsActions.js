@@ -24,7 +24,7 @@ export const addCar=(reqObj)=>async dispatch=>{
          await axios.post('/api/cars/addcar' , reqObj)
        
          dispatch({type: 'LOADING' , payload:false})
-         message.success('New car added successfully')
+         message.success('New Flight added successfully')
          setTimeout(() => {
             window.location.href='/admin'
          }, 500);
@@ -44,13 +44,14 @@ export const editCar=(reqObj)=>async dispatch=>{
          await axios.post('/api/cars/editcar' , reqObj)
        
          dispatch({type: 'LOADING' , payload:false})
-         message.success('Car details updated successfully')
+         message.success('Flight details updated successfully')
          setTimeout(() => {
             window.location.href='/admin'
          }, 500);
     } catch (error) {
         console.log(error)
         dispatch({type: 'LOADING' , payload:false})
+        message.error('Failed to update flight details');
     }
       
 
@@ -64,7 +65,7 @@ export const deleteCar=(reqObj)=>async dispatch=>{
          await axios.post('/api/cars/deletecar' , reqObj)
        
          dispatch({type: 'LOADING' , payload:false})
-         message.success('Car deleted successfully')
+         message.success('Flight deleted successfully')
          setTimeout(() => {
             window.location.reload()
          }, 500);

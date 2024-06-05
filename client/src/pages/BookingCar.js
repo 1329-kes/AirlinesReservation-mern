@@ -14,29 +14,44 @@ const { RangePicker } = DatePicker;
 function BookingCar({ match }) {
   const { cars } = useSelector((state) => state.carsReducer);
   const { loading } = useSelector((state) => state.alertsReducer);
-  const [car, setcar] = useState({});
+  const [car, setCar] = useState({});
   const dispatch = useDispatch();
   const [from, setFrom] = useState();
   const [to, setTo] = useState();
-  const [totalHours, setTotalHours] = useState(0);
-  const [driver, setdriver] = useState(false);
+  const[totalHours,setTotalHours]=useState(0);
+  const [totalPassengers  , setTotalPassengers] = useState(0);
+  const [businessClass, setBusinessClass] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [seatsToBook, setSeatsToBook] = useState(1);
+  const [passengerName, setPassengerName] = useState("");
+const [mobileNumber, setMobileNumber] = useState("");
+
 
   useEffect(() => {
     if (cars.length == 0) {
       dispatch(getAllCars());
     } else {
-      setcar(cars.find((o) => o._id == match.params.carid));
+      setCar(cars.find((o) => o._id == match.params.carid));
     }
   }, [cars]);
 
+
+
+ 
   useEffect(() => {
-    setTotalAmount(totalHours * car.rentPerHour);
-    if (driver) {
-      setTotalAmount(totalAmount + 30 * totalHours);
+    let totalAmount = seatsToBook* car.ticketPrice;
+    if (businessClass) {
+      totalAmount += 100 * seatsToBook;
     }
-  }, [driver, totalHours]);
+    setTotalAmount(totalAmount);
+  }, [businessClass, totalHours, seatsToBook, car]);
+  
+  // Function to handle changes in the number of seats to book
+  function handleSeatsChange(e) {
+    const selectedSeats = parseInt(e.target.value, 10);
+    setSeatsToBook(selectedSeats);
+  }
 
   function selectTimeSlots(values) {
     setFrom(moment(values[0]).format("MMM DD yyyy HH:mm"));
@@ -53,12 +68,15 @@ function BookingCar({ match }) {
         user: JSON.parse(localStorage.getItem("user"))._id,
         car: car._id,
         totalHours,
-        totalAmount,
-        driverRequired: driver,
+        calculatedTotalAmount:Math.floor(totalAmount),
+        businessClass,
         bookedTimeSlots: {
           from,
           to,
         },
+        name: passengerName, 
+        mobileNo: mobileNumber ,
+
       };
   
       dispatch(bookCar(reqObj));
@@ -70,25 +88,27 @@ function BookingCar({ match }) {
       <Row
         justify="center"
         className="d-flex align-items-center"
-        style={{ minHeight: "90vh" }}
+        style={{ minHeight: "80vh" }}
       >
-        <Col lg={10} sm={24} xs={24} className='p-3'>
-          <img src={car.image} className="carimg2 bs1 w-100" data-aos='flip-left' data-aos-duration='1500'/>
+        <Col lg={10} sm={200} xs={200} className='p-10'>
+          <img src={car.image} className="carimg bs1 h-100 w-100" data-aos='flip-left' data-aos-duration='15000'/>
         </Col>
 
         <Col lg={10} sm={24} xs={24} className="text-right">
           <Divider type="horizontal" dashed>
-            Car Info
+           <h1> Flight Information </h1>
           </Divider>
-          <div style={{ textAlign: "right" }}>
-            <p>{car.name}</p>
-            <p>{car.rentPerHour} Rent Per hour /-</p>
-            <p>Fuel Type : {car.fuelType}</p>
-            <p>Max Persons : {car.capacity}</p>
+          <div style={{ textAlign: "left" }}>
+            <p><h5>{car.flightNumber}</h5></p>
+            <p>{car.ticketPrice} Price /-</p>
+            <p>Departure Airport: {car.departureAirport}</p>
+            <p>Arrival Airport: {car.arrivalAirport}</p>
+            <p>Arrival Time:{car.arrivalTime}</p>
+            <p>Departure Time:{car.departureTime}</p>
           </div>
 
           <Divider type="horizontal" dashed>
-            Select Time Slots
+           <h1> Select Time Slots</h1>
           </Divider>
           <RangePicker
             showTime={{ format: "HH:mm" }}
@@ -102,7 +122,7 @@ function BookingCar({ match }) {
               setShowModal(true);
             }}
           >
-            See Booked Slots
+            See Booking Slots
           </button>
           {from && to && (
             <div>
@@ -110,18 +130,51 @@ function BookingCar({ match }) {
                 Total Hours : <b>{totalHours}</b>
               </p>
               <p>
-                Rent Per Hour : <b>{car.rentPerHour}</b>
+                price : <b>{car.ticketPrice}</b>
               </p>
+
+              <div>
+             <div>
+             Passenger Name: 
+  <input
+  
+    type="text"
+    placeholder="Passenger Name"
+    value={passengerName}
+    onChange={(e) => setPassengerName(e.target.value)}
+  />
+</div>
+
+
+<div>
+  Mobile Number
+  <input
+    type="text"
+    placeholder="Mobile Number"
+    value={mobileNumber}
+    onChange={(e) => setMobileNumber(e.target.value)}
+  />
+</div>
+
+    
+    
+    
+  </div>
+  <p>
+      Number of Seats to Book:{" "}
+      <input
+        type="number"
+        min="1"
+        value={seatsToBook}
+        onChange={handleSeatsChange}
+      />
+    </p>
               <Checkbox
                 onChange={(e) => {
-                  if (e.target.checked) {
-                    setdriver(true);
-                  } else {
-                    setdriver(false);
-                  }
+                  setBusinessClass(e.target.checked)
                 }}
               >
-                Driver Required
+                :BusinessClass
               </Checkbox>
 
               <h3>Total Amount : {totalAmount}</h3>
@@ -132,6 +185,9 @@ function BookingCar({ match }) {
                 currency='inr'
                 amount={totalAmount * 100}
                 stripeKey="pk_test_51IYnC0SIR2AbPxU0TMStZwFUoaDZle9yXVygpVIzg36LdpO8aSG8B9j2C0AikiQw2YyCI8n4faFYQI5uG3Nk5EGQ00lCfjXYvZ"
+                //pk_test_51IYnC0SIR2AbPxU0TMStZwFUoaDZle9yXVygpVIzg36LdpO8aSG8B9j2C0AikiQw2YyCI8n4faFYQI5uG3Nk5EGQ00lCfjXYvZ
+                billingAddress
+
               >
                   <button className="btn1">
                 Book Now
@@ -151,11 +207,11 @@ function BookingCar({ match }) {
             title="Booked time slots"
           >
             <div className="p-2">
-              {car.bookedTimeSlots.map((slot) => {
-                return (
-                  <button className="btn1 mt-2">
-                    {slot.from} - {slot.to}
-                  </button>
+              {car.bookedTimeSlots.map((slot,index) => {
+                return(
+                <button key={index} className="btn1 mt-2">
+                {slot.from} - {slot.to}
+                </button>
                 );
               })}
 

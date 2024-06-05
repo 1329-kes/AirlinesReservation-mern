@@ -8,6 +8,7 @@ import Spinner from "../components/Spinner";
 import moment from "moment";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Popconfirm, message } from "antd";
+
 const { RangePicker } = DatePicker;
 function AdminHome() {
   const { cars } = useSelector((state) => state.carsReducer);
@@ -30,7 +31,7 @@ function AdminHome() {
           <div className="d-flex justify-content-between align-items-center">
             <h3 className="mt-1 mr-2">Admin Panel</h3>
             <button className="btn1">
-              <a href="/addcar">ADD CAR</a>
+              <a href="/addcar">ADD FLIGHT</a>
             </button>
           </div>
         </Col>
@@ -38,29 +39,32 @@ function AdminHome() {
 
       {loading == true && <Spinner />}
 
-      <Row justify="center" gutter={16}>
+      <Row justify="left" gutter={16}>
         {totalCars.map((car) => {
           return (
-            <Col lg={5} sm={24} xs={24}>
-              <div className="car p-2 bs1">
+            <Col lg={6} sm={30} xs={10}>
+              <div className="car p-10 bs10">
                 <img src={car.image} className="carimg" />
 
                 <div className="car-content d-flex align-items-center justify-content-between">
-                  <div className="text-left pl-2">
+                  <div className="text-left pl-1">
                     <p>{car.name}</p>
-                    <p> Rent Per Hour {car.rentPerHour} /-</p>
+                    <p>FlightNumber:{car.flightNumber}</p>
+                    <p>Arrival Time: {car.arrivalTime}</p>
+                    <p>DepartureTime:{car.departureTime}</p>
+                    <p> Price: {car.ticketPrice} /-</p>
                   </div>
 
-                  <div className="mr-4">
+                  <div className="mr-10">
                     <Link to={`/editcar/${car._id}`}>
                       <EditOutlined
-                        className="mr-3"
+                        className="mr-2"
                         style={{ color: "green", cursor: "pointer" }}
                       />
                     </Link>
 
                     <Popconfirm
-                      title="Are you sure to delete this car?"
+                      title="Are you sure to delete this Flight?"
                       onConfirm={()=>{dispatch(deleteCar({carid : car._id}))}}
                       
                       okText="Yes"

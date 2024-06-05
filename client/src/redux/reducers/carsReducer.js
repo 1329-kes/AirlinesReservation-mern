@@ -14,7 +14,7 @@ export const carsReducer = (state=initialData , action)=>{
              }
          }
          
-         default:return state
+         default:return state;
      }
 
 }

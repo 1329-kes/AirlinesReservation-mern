@@ -13,28 +13,44 @@ router.get("/getallcars", async (req, res) => {
 
 router.post("/addcar", async (req, res) => {
   try {
+    // Log the request body
     const newcar = new Car(req.body);
     await newcar.save();
     res.send("Car added successfully");
   } catch (error) {
-    return res.status(400).json(error);
+    console.error('Error adding car:', error); // Log the error details
+    return res.status(400).json({ error: error.message });
   }
 });
 
 router.post("/editcar", async (req, res) => {
   try {
+    
     const car = await Car.findOne({ _id: req.body._id });
-    car.name = req.body.name;
+
+    if (!car) {
+      return res.status(404).json({ message: 'Car not found' });
+    }
+    
+    car.flightNumber = req.body.flightNumber;
+    car.departureAirport = req.body.departureAirport;
     car.image = req.body.image;
-    car.fuelType = req.body.fuelType;
-    car.rentPerHour = req.body.rentPerHour;
-    car.capacity = req.body.capacity;
+    car.arrivalAirport = req.body.arrivalAirport;
+    car.departureTime = req.body.departureTime;
+    car.arrivalTime = req.body.arrivalTime;
+    car.passengerCount = req.body.passengerCount;
+    car.ticketPrice = req.body.ticketPrice;
+    car.status = req.body.status;
+    car.currency = req.body.currency;
+    car.flightClass = req.body.flightClass;
+
+    
 
     await car.save();
 
-    res.send("Car details updated successfully");
+    res.status(200).json({ message: "Flight details updated successfully", car });
   } catch (error) {
-    return res.status(400).json(error);
+    return res.status(400).json({ error: error.message });
   }
 });
 
@@ -42,7 +58,7 @@ router.post("/deletecar", async (req, res) => {
   try {
     await Car.findOneAndDelete({ _id: req.body.carid });
 
-    res.send("Car deleted successfully");
+    res.send("flight deleted successfully");
   } catch (error) {
     return res.status(400).json(error);
   }

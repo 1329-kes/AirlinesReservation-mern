@@ -10,6 +10,7 @@ import UserBookings from './pages/UserBookings';
 import AddCar from './pages/AddCar';
 import AdminHome from './pages/AdminHome';
 import EditCar from './pages/EditCar';
+import AdminLogin from './pages/AdminLogin';
 
 function App() {
   return (
@@ -24,9 +25,10 @@ function App() {
              <Route path='/register' exact component={Register} />
              <ProtectedRoute path='/booking/:carid' exact component={BookingCar} />
              <ProtectedRoute path='/userbookings' exact component={UserBookings} />
-             <ProtectedRoute path='/addcar' exact component={AddCar} />
+             <ProtectedRoute path='/AddCar' exact component={AddCar} />
              <ProtectedRoute path='/editcar/:carid' exact component={EditCar} />
              <ProtectedRoute path='/admin' exact component={AdminHome} />
+             <ProtectedRoute path='/AdminLogin' exact component={AdminLogin} />
          
          </BrowserRouter>
 
